@@ -12,10 +12,13 @@ import org.jboss.logging.Logger;
 import org.jboss.resource.adapter.jdbc.ValidConnectionChecker;
 
 /**
+ * a connection checker for jBoss 4.2 DataSource
+ * 
  * @author SunShine
- *
+ * 
  */
-public class CustomValidConnectionChecker implements ValidConnectionChecker, Serializable{
+public class CustomValidConnectionChecker implements ValidConnectionChecker,
+		Serializable {
 
 	/**
 	 * 
@@ -26,39 +29,27 @@ public class CustomValidConnectionChecker implements ValidConnectionChecker, Ser
 	@Override
 	public SQLException isValidConnection(Connection c) {
 		SQLException sqe = null;
-	    Statement stmt = null;
-	    try
-	    {
-	      stmt = c.createStatement();
-	      stmt.execute("SELECT 1");
-//	      System.out.println("connection validation successfully."+c.getCatalog());
-	      log.info("connection validation successfully."+c.getCatalog());
-	    }
-	    catch (SQLException e)
-	    {
-//	      System.out.println("warning: connection validation failed for current managed connection.");
-	    	log.info("warning: connection validation failed for current managed connection.");
-	      sqe = e;
-	    }
-	    finally
-	    {
-	      try
-	      {
-	        if (stmt != null)
-	        {
-	          stmt.close();
-	        }
-
-	      }
-	      catch (SQLException e)
-	      {
-//	        System.out.println("simple close failed for managed connection"+e.getMessage());
-	    	  log.info("simple close failed for managed connection"+e.getMessage());
-	      }
-
-	    }
-
-	    return sqe;
+		Statement stmt = null;
+		try {
+			stmt = c.createStatement();
+			stmt.execute("SELECT 1");
+			// System.out.println("connection validation successfully."+c.getCatalog());
+			log.debug("connection validation successfully." + c.getCatalog());
+		} catch (SQLException e) {
+			// System.out.println("warning: connection validation failed for current managed connection.");
+			log.error("warning: connection validation failed for current managed connection.");
+			sqe = e;
+		} finally {
+			try {
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException e) {
+				// System.out.println("simple close failed for managed connection"+e.getMessage());
+				log.error("simple close failed for managed connection"
+						+ e.getMessage());
+			}
+		}
+		return sqe;
 	}
-
 }
